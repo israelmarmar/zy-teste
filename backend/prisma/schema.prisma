@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique @db.VarChar(30)
+  password     String         @db.VarChar(100)
+  email        String         @unique @db.VarChar(100)
+  Topic        Topic[]
+  Subscription Subscription[]
+
+  @@map("users")
+}
+
+model Topic {
+  id           Int            @id @default(autoincrement())
+  title        String
+  creator      User           @relation(fields: [creatorId], references: [id])
+  creatorId    Int
+  // Adicione outros campos relevantes para o tópico, se necessário
+  Subscription Subscription[]
+}
+
+model Subscription {
+  id      Int   @id @default(autoincrement())
+  user    User  @relation(fields: [userId], references: [id])
+  topic   Topic @relation(fields: [topicId], references: [id])
+  userId  Int
+  topicId Int
+}
