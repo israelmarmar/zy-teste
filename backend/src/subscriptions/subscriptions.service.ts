@@ -3,7 +3,6 @@ import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { PrismaClient } from '@prisma/client';
 import { User } from 'src/users/entities/user.entity';
-import { Topic } from 'src/topics/entities/topic.entity';
 
 const prisma = new PrismaClient();
 
