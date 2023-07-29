@@ -24,7 +24,7 @@ model User {
 
 model Topic {
   id           Int            @id @default(autoincrement())
-  title        String
+  title        String         @unique
   creator      User           @relation(fields: [creatorId], references: [id])
   creatorId    Int
   // Adicione outros campos relevantes para o tópico, se necessário

@@ -51,11 +51,31 @@ export class SubscriptionsService {
   }
 
   findAll() {
-    return `This action returns all subscriptions`;
+    return prisma.subscription.findMany({
+      include: {
+        user: true,
+        topic: true,
+      },
+    });
+  }
+
+  async myFindAll(user: User) {
+    const mySubscriptions = await prisma.subscription.findMany({
+      include: {
+        topic: true,
+      },
+      where: {
+        userId: user.id,
+      },
+    });
+
+    return mySubscriptions;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} subscription`;
+    return prisma.subscription.findFirst({
+      where: { id },
+    });
   }
 
   update(id: number, updateSubscriptionDto: UpdateSubscriptionDto) {

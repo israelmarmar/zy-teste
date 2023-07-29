@@ -27,11 +27,13 @@ export class SubscriptionsController {
     );
   }
 
-  @Get()
-  findAll() {
-    return this.subscriptionsService.findAll();
+  @UseGuards(AuthGuard)
+  @Get('/me')
+  myFindAll(@Req() request) {
+    return this.subscriptionsService.myFindAll(request['user']);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.subscriptionsService.findOne(+id);

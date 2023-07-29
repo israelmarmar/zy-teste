@@ -4,6 +4,9 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { PrismaClient } from '@prisma/client';
 import { User } from 'src/users/entities/user.entity';
+import { WsException } from '@nestjs/websockets';
+import * as jwt from 'jsonwebtoken';
+import { Socket } from 'socket.io';
 
 const prisma = new PrismaClient();
 
@@ -85,6 +88,23 @@ export class NotificationsService {
     } catch (e) {
       throw e;
     }
+  }
+
+  async getUserFromSocket(socket: Socket) {
+    let auth_token = socket.handshake.headers.authorization;
+    auth_token = auth_token.split(' ')[1];
+
+    const { userId }: any = await jwt.verify(
+      auth_token,
+      process.env.JWT_SECRET,
+    );
+
+    const user = await prisma.user.findFirst({ where: { id: userId } });
+
+    if (!user) {
+      throw new WsException('Invalid credentials.');
+    }
+    return user;
   }
 
   async close() {

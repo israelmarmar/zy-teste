@@ -26,7 +26,10 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^10.1.2",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-socket.io": "^10.1.2",
+    "@nestjs/websockets": "^10.1.2",
     "@prisma/client": "^5.0.0",
+    "@types/socket.io": "^3.0.2",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.3",
     "bcrypt": "^5.1.0",
@@ -34,7 +37,8 @@
     "passport-jwt": "^4.0.1",
     "prisma": "^5.0.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

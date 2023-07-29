@@ -21,12 +21,61 @@ export class TopicsService {
     }
   }
 
-  findAll() {
-    return `This action returns all topics`;
+  async findAll(user: User) {
+    const subscribedTopics = await prisma.subscription.findMany({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        topicId: true,
+      },
+    });
+
+    const myTopics = await prisma.topic.findMany({
+      where: {
+        creatorId: user.id,
+      },
+    });
+
+    const subscribedTopicIds = subscribedTopics.map(
+      (subscription) => subscription.topicId,
+    );
+
+    const myTopicsTopicIds = myTopics.map((topic) => topic.id);
+
+    const topicsWithoutSubscription = await prisma.topic.findMany({
+      include: {
+        creator: true,
+      },
+      where: {
+        NOT: {
+          id: {
+            in: [...subscribedTopicIds, ...myTopicsTopicIds],
+          },
+        },
+      },
+    });
+
+    return topicsWithoutSubscription;
+  }
+
+  async myFindAll(user: User) {
+    const myTopics = await prisma.topic.findMany({
+      include: {
+        creator: true,
+      },
+      where: {
+        creatorId: user.id,
+      },
+    });
+
+    return myTopics;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} topic`;
+    return prisma.topic.findFirst({
+      where: { id },
+    });
   }
 
   update(id: number, updateTopicDto: UpdateTopicDto) {

@@ -24,11 +24,19 @@ export class TopicsController {
     return this.topicsService.create(createTopicDto, request['user']);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.topicsService.findAll();
+  findAll(@Req() request) {
+    return this.topicsService.findAll(request['user']);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('/me')
+  myFindAll(@Req() request) {
+    return this.topicsService.myFindAll(request['user']);
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.topicsService.findOne(+id);
