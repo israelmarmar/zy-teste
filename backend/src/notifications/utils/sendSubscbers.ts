@@ -8,26 +8,33 @@ export default async function sendSubscribers(
   server: Server,
   content: string,
 ) {
-  const subscriptions = await prisma.subscription.findMany({
-    include: {
-      user: true,
-      topic: true,
-    },
-    where: { topicId },
-  });
+  const subscriptions =
+    (await prisma.subscription.findMany({
+      include: {
+        user: true,
+        topic: true,
+      },
+      where: { topicId },
+    })) || [];
+
+  console.log(subscriptions);
 
   const creator = await prisma.user.findFirst({
     where: { id: subscriptions[0]?.topic.creatorId },
   });
+
+  console.log(creator);
 
   server.sockets.sockets
     .get(creator.socketId)
     .emit(`notify-topicId-${topicId}`, content);
 
   subscriptions.forEach((s) => {
-    if (s.user.socketId)
+    if (server.sockets.sockets.get(s?.user?.socketId)) {
+      console.log(s?.user?.socketId);
       server.sockets.sockets
-        .get(s.user.socketId)
+        .get(s?.user?.socketId)
         .emit(`notify-topicId-${topicId}`, content);
+    }
   });
 }

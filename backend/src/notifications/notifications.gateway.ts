@@ -24,7 +24,8 @@ export class NotificationsGateway implements OnGatewayInit {
     const { token } = payload;
 
     if (!token) {
-      this.server.emit('authenticated', { message: 'Cliente não autenticado' });
+      console.log('Cliente não autenticado:', client.id);
+      client.emit('authenticated', { message: 'Cliente não autenticado' });
       return client.disconnect(true);
     }
 
@@ -37,7 +38,7 @@ export class NotificationsGateway implements OnGatewayInit {
         where: { id: userId },
         data: { socketId: client.id },
       });
-      this.server.emit('authenticated', { message: 'Você está autenticado!' });
+      client.emit('authenticated', { message: 'Você está autenticado!' });
     } else {
       console.log('Cliente não autenticado:', client.id);
       // Negar a conexão com o cliente não autenticado

@@ -25,7 +25,7 @@ const Login = () => {
 
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
-                router.push('home');
+                router.push('/');
             } else {
                 setLoading(false);
                 alert('Credenciais inválidas. Tente novamente.');

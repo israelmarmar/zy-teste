@@ -40,32 +40,32 @@ const Notifications: React.FC<NotificationsProps> = ({ topicId }) => {
         if (!socketId) {
             const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL || '');
             socket.on("connect", () => {
+
                 console.log(socket.id);
 
-                socket.emit('authenticate', { token });
+                        socket.emit('authenticate', { token });
 
-                socket.on(`notify-topicId-${topicId}`, (data) => {
-                    const { username, content, uuid } = JSON.parse(data);
-                    console.log(tabs)
-                    setTabs(tabs => {
-                        const check = tabs.filter(t => t.uuid === uuid);
+                        socket.on('authenticated', (data) => {
+                            console.log(data.message);
+                        });
 
-                        if (check.length === 0)
-                            return [{ id: tabs.length, creator: { username }, title: content || '', uuid }, ...tabs];
-                        return tabs;
-                    })
-                });
+                        socket.on(`notify-topicId-${topicId}`, (data) => {
+                            const { username, content, uuid } = JSON.parse(data);
+                            console.log(tabs)
+                            setTabs(tabs => {
+                                const check = tabs.filter(t => t.uuid === uuid);
+
+                                if (check.length === 0)
+                                    return [{ id: tabs.length, creator: { username }, title: content || '', uuid }, ...tabs];
+                                return tabs;
+                            })
+                        });
 
                 setSocketId(socket.id);
+
             });
 
-            socket.on('authenticated', (data) => {
-                console.log(data.message);
-            });
 
-            return () => {
-                socket.off('notify-resp');
-            };
         }
     })
 
@@ -75,9 +75,9 @@ const Notifications: React.FC<NotificationsProps> = ({ topicId }) => {
             <div className='row'>
                 {topicId && <><input type="text" value={newNotification}
                     onChange={(e) => setNewNotification(e.target.value)} placeholder='digite uma nova notificação' />
-                <button className="notification-button" onClick={handleButtonClick}>
-                    criar notificação
-                </button></>}
+                    <button className="notification-button" onClick={handleButtonClick}>
+                        criar notificação
+                    </button></>}
             </div>
             {tabs.length > 0 ? tabs.map((tab) => (
                 <TabComponent key={tab.id} id={tab.id} topic={tab.title} username={tab.creator.username} isText={true} />
