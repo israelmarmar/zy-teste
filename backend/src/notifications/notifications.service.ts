@@ -6,7 +6,10 @@ import { PrismaClient } from '@prisma/client';
 import { User } from 'src/users/entities/user.entity';
 import { WsException } from '@nestjs/websockets';
 import * as jwt from 'jsonwebtoken';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import { NotificationsGateway } from './notifications.gateway';
+import { v4 as uuidv4 } from 'uuid';
+import sendSubscribers from './utils/sendSubscbers';
 
 const prisma = new PrismaClient();
 
@@ -16,8 +19,11 @@ const host = process.env.RABBITMQ_HOST;
 
 @Injectable()
 export class NotificationsService {
+  private socketServer: Server;
   private connection: Connection;
   private channel: Channel;
+
+  constructor(private readonly gateway: NotificationsGateway) {}
 
   async connect() {
     try {
@@ -29,7 +35,10 @@ export class NotificationsService {
       this.consume(queueName, (message) => {
         if (message) {
           const content = message.content.toString();
-          console.log(`Mensagem recebida: ${content}`);
+          const { topicId } = JSON.parse(content);
+          console.log(`notify-topicId-${topicId}`);
+          //this.gateway.server.emit(`notify-topicId-${topicId}`, content);
+          sendSubscribers(topicId, this.gateway.server, content);
         }
       });
     } catch (error) {
@@ -45,7 +54,6 @@ export class NotificationsService {
       if (this.channel) {
         await this.channel.assertQueue(queue, { durable: true });
         await this.channel.consume(queue, callback, { noAck: true });
-        console.log('conectado');
       } else {
         await new Promise((r) => setTimeout(r, 2000));
         this.consume(queue, callback);
@@ -77,7 +85,14 @@ export class NotificationsService {
         });
         await this.channel.sendToQueue(
           process.env.RABBITMQ_QUEUE_NAME,
-          Buffer.from(createNotificationDto.content),
+          Buffer.from(
+            JSON.stringify({
+              username: user.username,
+              uuid: uuidv4(),
+              topicId: createNotificationDto.topicId,
+              ...createNotificationDto,
+            }),
+          ),
         );
       } else {
         await new Promise((r) => setTimeout(r, 2000));

@@ -1,36 +1,48 @@
 import {
-  ConnectedSocket,
-  MessageBody,
-  OnGatewayConnection,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  SubscribeMessage,
+  OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { PrismaClient } from '@prisma/client';
-import { NotificationsService } from './notifications.service';
+import * as jwt from 'jsonwebtoken';
 
-@WebSocketGateway()
-export class NotificationsGateway implements OnGatewayConnection {
+const prisma = new PrismaClient();
+
+@WebSocketGateway({ cors: true })
+export class NotificationsGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
 
-  constructor(private notificationsService: NotificationsService) {}
-
-  async handleConnection(socket: Socket) {
-    await this.notificationsService.getUserFromSocket(socket);
+  afterInit(server: any) {
+    console.log('servidor socket.io iniciado');
   }
 
-  // listen for send_message events
-  @SubscribeMessage('create_notify')
-  async listenForMessages(
-    @MessageBody() message: string,
-    @ConnectedSocket() socket: Socket,
-  ) {
-    await this.notificationsService.getUserFromSocket(socket);
+  @SubscribeMessage('authenticate')
+  async handleAuthenticate(client: any, payload: any): Promise<void> {
+    const { token } = payload;
 
-    this.server.sockets.emit('receive_notify', {
-      message,
-    });
+    if (!token) {
+      this.server.emit('authenticated', { message: 'Cliente não autenticado' });
+      return client.disconnect(true);
+    }
+
+    const { userId }: any = await jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await prisma.user.findFirst({ where: { id: userId } });
+
+    if (user) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { socketId: client.id },
+      });
+      this.server.emit('authenticated', { message: 'Você está autenticado!' });
+    } else {
+      console.log('Cliente não autenticado:', client.id);
+      // Negar a conexão com o cliente não autenticado
+      this.server.emit('authenticated', { message: 'Cliente não autenticado' });
+      client.disconnect(true);
+    }
   }
 }

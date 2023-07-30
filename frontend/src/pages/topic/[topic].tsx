@@ -47,7 +47,7 @@ const Topic = () => {
                     </TabList>
                 </AppBar>
                 <TabPanel value="1">
-                    <Notifications topicId={parseInt(topic || 0)} />
+                    <Notifications topicId={parseInt(topic as string)} />
                 </TabPanel>
             </TabContext>
         </main>

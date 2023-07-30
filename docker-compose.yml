@@ -1,5 +1,44 @@
 version: "3.2"
 services:
+
+  frontend:
+    container_name: ziyou-front
+    restart: always
+    image: node:alpine
+    #build:
+    #  context: ./frontend/.
+    #  dockerfile: frontend.Dockerfile
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    environment:
+      - CHOKIDAR_USEPOLLING=true # This is a file watching mechanism that is used by create-react-app to watch for file changes.
+      - NEXT_WEBPACK_USEPOLLING=1
+    volumes:
+      - ./frontend/:/app
+    command: sh -c "npm install -f && npm run build && npm start"
+    ports:
+      - 5000:3000
+
+  backend:
+    container_name: ziyou-back
+    restart: always
+    image: node:alpine
+    #build:
+    #  context: ./frontend/.
+    #  dockerfile: frontend.Dockerfile
+    stdin_open: true
+    tty: true
+    working_dir: /api
+    volumes:
+      - ./backend/:/api
+    command: sh -c "npm install -g prisma@latest && npx prisma db push && npm install -f && npm run build && npm start"
+    ports:
+      - 4000:3000
+    expose:
+      - "4000"
+    networks:
+      - rabbitmq_go_net
   
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -43,7 +82,6 @@ services:
 
 networks:
   rabbitmq_go_net:
-    driver: bridge
 
 volumes:
   my-db:

@@ -18,6 +18,7 @@ model User {
   email        String         @unique @db.VarChar(100)
   Topic        Topic[]
   Subscription Subscription[]
+  socketId     String?
 
   @@map("users")
 }
