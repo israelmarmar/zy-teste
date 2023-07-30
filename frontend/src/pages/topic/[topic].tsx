@@ -39,10 +39,11 @@ const Topic = () => {
                     <AppBar position="static">
                         <TabList onChange={handleChange} aria-label="simple tabs example">
                             <Tab label={title} value="1" />
+                            <Tab label={''} value="2" disabled/>
                         </TabList>
                     </AppBar>
                     <TabPanel value="1">
-                        <Notifications />
+                        <Notifications topicId={parseInt(topic || 0)} />
                     </TabPanel>
                 </TabContext>
             </main>

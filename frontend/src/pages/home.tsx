@@ -28,7 +28,6 @@ const Home = () => {
                             <Tab label="Tópicos abertos" value="1" />
                             <Tab label="Meus tópicos" value="2" />
                             <Tab label="Inscritos" value="3" />
-                            <Tab label="Notificações" value="4" />
                         </TabList>
                     </AppBar>
                     <TabPanel value="1">
@@ -39,9 +38,6 @@ const Home = () => {
                     </TabPanel>
                     <TabPanel value="3">
                         <MySubscriptions />
-                    </TabPanel>
-                    <TabPanel value="4">
-                        <Notifications />
                     </TabPanel>
                 </TabContext>
             </main>
