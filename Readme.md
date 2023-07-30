@@ -19,8 +19,8 @@ A página inicial é dividida em três tabs
 
 
 
-Tópicos Abertos: Mostra os tópicos não inscritos pelo usuário, com botão para se inscrever
-Meus Tópicos: Tópicos criados pelo usuário, com botão para criar novos tópicos
+Tópicos Abertos: Mostra os tópicos não inscritos pelo usuário, com botão para se inscrever;
+Meus Tópicos: Tópicos criados pelo usuário, com botão para criar novos tópicos;
 Inscritos: Tópicos inscritos pelo usuário com links para a página de notificações
 
 
