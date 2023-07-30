@@ -18,12 +18,16 @@ const Topic = () => {
     const { topic } = query;
     const [tab, setTab] = useState('1');
 
-    useEffect(()=>{
+    useEffect(() => {
         (async () => {
             if (!title && topic) {
-                const token = localStorage.getItem('token');
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}topics/${topic}`, { headers: { Authorization: `Bearer ${token}` } });
-                setTitle(data.title);
+                try {
+                    const token = localStorage.getItem('token');
+                    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}topics/${topic}`, { headers: { Authorization: `Bearer ${token}` } });
+                    setTitle(data.title);
+                } catch (e) {
+                    console.log(e)
+                }
             }
         })();
     })
@@ -34,19 +38,19 @@ const Topic = () => {
 
 
     return (
-            <main className='home-container'>
-                <TabContext value={tab}>
-                    <AppBar position="static">
-                        <TabList onChange={handleChange} aria-label="simple tabs example">
-                            <Tab label={title} value="1" />
-                            <Tab label={''} value="2" disabled/>
-                        </TabList>
-                    </AppBar>
-                    <TabPanel value="1">
-                        <Notifications topicId={parseInt(topic || 0)} />
-                    </TabPanel>
-                </TabContext>
-            </main>
+        <main className='home-container'>
+            <TabContext value={tab}>
+                <AppBar position="static">
+                    <TabList onChange={handleChange} aria-label="simple tabs example">
+                        <Tab label={title} value="1" />
+                        <Tab label={''} value="2" disabled />
+                    </TabList>
+                </AppBar>
+                <TabPanel value="1">
+                    <Notifications topicId={parseInt(topic || 0)} />
+                </TabPanel>
+            </TabContext>
+        </main>
     );
 };
 

@@ -31,7 +31,7 @@ const OpenTopics = () => {
     return (
         <div>
             {tabs.map((tab) => (
-                <TabComponent key={tab.id} id={tab.id} topic={tab.title} username={tab.creator.username} subsBtn={true} />
+                <TabComponent key={tab.id} id={tab.id} topic={tab.title} username={tab.creator.username} subsBtn={true} isText={true} />
             ))}
         </div>
     );

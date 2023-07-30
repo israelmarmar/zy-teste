@@ -35,10 +35,14 @@ const Notifications: React.FC<NotificationsProps> = ({ topicId }) => {
     };
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+
         if (!socketId) {
             const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL || '');
             socket.on("connect", () => {
                 console.log(socket.id);
+
+                socket.emit('authenticate', { token });
 
                 socket.on(`notify-topicId-${topicId}`, (data) => {
                     const { username, content, uuid } = JSON.parse(data);
@@ -53,6 +57,10 @@ const Notifications: React.FC<NotificationsProps> = ({ topicId }) => {
                 });
 
                 setSocketId(socket.id);
+            });
+
+            socket.on('authenticated', (data) => {
+                console.log(data.message);
             });
 
             return () => {
@@ -72,7 +80,7 @@ const Notifications: React.FC<NotificationsProps> = ({ topicId }) => {
                 </button></>}
             </div>
             {tabs.length > 0 ? tabs.map((tab) => (
-                <TabComponent key={tab.id} id={tab.id} topic={tab.title} username={tab.creator.username} />
+                <TabComponent key={tab.id} id={tab.id} topic={tab.title} username={tab.creator.username} isText={true} />
             )) : <h2>Nenhuma notificação disponível</h2>}
         </div>
     );

@@ -8,9 +8,10 @@ interface TabProps {
     username?: string;
     topic: string;
     subsBtn?: boolean;
+    isText?: boolean;
 }
 
-const TabComponent: React.FC<TabProps> = ({ id, username, topic, subsBtn }) => {
+const TabComponent: React.FC<TabProps> = ({ id, username, topic, subsBtn, isText }) => {
     const [isSubscribed, setIsSubscribed] = useState(false);
 
 
@@ -24,7 +25,7 @@ const TabComponent: React.FC<TabProps> = ({ id, username, topic, subsBtn }) => {
         <div className="tab-container">
             <div className="tab-content">
                 {username && <span className="username">@{`${username}\b`}</span>}
-                <Link href={`/topic/${id}`} className="topic-name">{topic}</Link>
+                {!isText ? <Link href={`/topic/${id}`} className="topic-name">{topic}</Link> : <span className="topic-name">{topic}</span> }
             </div>
             { subsBtn && <button className="subscribe-button" onClick={handleButtonClick}>
                 {isSubscribed ? (
