@@ -8,6 +8,15 @@ export default async function sendSubscribers(
   server: Server,
   content: string,
 ) {
+  const creatorId = (
+    await prisma.topic.findFirst({
+      include: {
+        creator: true,
+      },
+      where: { id: topicId },
+    })
+  ).creator.id;
+
   const subscriptions =
     (await prisma.subscription.findMany({
       include: {
@@ -20,7 +29,7 @@ export default async function sendSubscribers(
   console.log(subscriptions);
 
   const creator = await prisma.user.findFirst({
-    where: { id: subscriptions[0]?.topic.creatorId },
+    where: { id: creatorId },
   });
 
   console.log(creator);
