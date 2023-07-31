@@ -25,9 +25,10 @@ export default async function sendSubscribers(
 
   console.log(creator);
 
-  server.sockets.sockets
-    .get(creator.socketId)
-    .emit(`notify-topicId-${topicId}`, content);
+  if (server.sockets.sockets.get(creator.socketId))
+    server.sockets.sockets
+      .get(creator.socketId)
+      .emit(`notify-topicId-${topicId}`, content);
 
   subscriptions.forEach((s) => {
     if (server.sockets.sockets.get(s?.user?.socketId)) {
