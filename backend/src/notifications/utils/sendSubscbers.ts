@@ -8,14 +8,14 @@ export default async function sendSubscribers(
   server: Server,
   content: string,
 ) {
-  const creatorId = (
+  const socketId = (
     await prisma.topic.findFirst({
       include: {
         creator: true,
       },
       where: { id: topicId },
     })
-  ).creator.id;
+  ).creator.socketId;
 
   const subscriptions =
     (await prisma.subscription.findMany({
@@ -28,15 +28,9 @@ export default async function sendSubscribers(
 
   console.log(subscriptions);
 
-  const creator = await prisma.user.findFirst({
-    where: { id: creatorId },
-  });
-
-  console.log(creator);
-
-  if (server.sockets.sockets.get(creator.socketId))
+  if (server.sockets.sockets.get(socketId))
     server.sockets.sockets
-      .get(creator.socketId)
+      .get(socketId)
       .emit(`notify-topicId-${topicId}`, content);
 
   subscriptions.forEach((s) => {
